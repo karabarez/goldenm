@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Goldenprizma</title>
-<style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0e1d}.page{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}.page.hidden{display:none}</style>  <link rel="icon" type="image/png" href="favicon.png">
+<style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;overscroll-behavior-y:none;background:#0b0e1d;touch-action:pan-x pan-y}.page{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}.page.hidden{display:none}</style>  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0e1d">
@@ -18,6 +18,36 @@ function decodeBase64Utf8(encoded){const binary=atob(encoded);const bytes=Uint8A
 const detailsFrame=document.getElementById('detailsPage');
 const ordersFrame=document.getElementById('ordersPage');
 const accountFrame=document.getElementById('accountPage');
+// Keep the app shell fixed and suppress iOS rubber-band overscroll inside each embedded screen.
+function lockScreenScroll(frame){
+  frame.addEventListener('load', () => {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc || doc.getElementById('goldenprizma-app-feel')) return;
+      const style = doc.createElement('style');
+      style.id = 'goldenprizma-app-feel';
+      style.textContent = `
+        html, body {
+          overscroll-behavior: none !important;
+          overscroll-behavior-y: none !important;
+          overflow: hidden !important;
+          max-height: 100%;
+        }
+        body, .phone {
+          overscroll-behavior: none !important;
+          -webkit-overflow-scrolling: auto;
+        }
+      `;
+      doc.head.appendChild(style);
+      doc.addEventListener('touchmove', event => {
+        event.preventDefault();
+      }, { passive: false });
+    } catch (error) {
+      // Keep the existing screen working if a browser blocks iframe styling.
+    }
+  });
+}
+[detailsFrame, ordersFrame, accountFrame].forEach(lockScreenScroll);
 function hideAll(){detailsFrame.classList.add('hidden');ordersFrame.classList.add('hidden');accountFrame.classList.add('hidden')}
 function showOrders(){hideAll();ordersFrame.classList.remove('hidden')}
 function showAccount(){hideAll();accountFrame.classList.remove('hidden')}
