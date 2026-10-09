@@ -39,14 +39,22 @@ function applyNativeLikeViewport(frame){
     style.id='golden-native-viewport-fix';
     style.textContent=`
       html,body{height:100%!important;min-height:0!important;overflow:hidden!important;overscroll-behavior:none!important;}
-      body{margin:0!important;}
+      body{margin:0!important;background:#1b1e31!important;}
       .app{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;min-height:0!important;margin:0 auto!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;padding-top:calc(env(safe-area-inset-top,0px) + 8px)!important;padding-bottom:0!important;}
       .header{flex:0 0 auto!important;}
       .filters{flex:0 0 auto!important;}
       .orders,.content{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain!important;-webkit-overflow-scrolling:touch!important;padding-bottom:130px!important;}
-      .bottom-nav{position:fixed!important;bottom:calc(12px + env(safe-area-inset-bottom,0px))!important;z-index:99999!important;}
+      .bottom-nav{position:fixed!important;bottom:max(0px,calc(env(safe-area-inset-bottom,0px) - 6px))!important;z-index:99999!important;}
       .phone{height:100dvh!important;min-height:0!important;padding-top:calc(env(safe-area-inset-top,0px) + 8px)!important;overflow:hidden!important;}
       .phone .body,.phone .details,.phone .summary{min-height:0;}
+      ${frame.id==='accountPage' ? `
+        html,body{background:linear-gradient(to bottom,#1b1e31 0,#1b1e31 200px,#111421 200px,#111421 100%)!important;}
+        .app{background:linear-gradient(to bottom,#1b1e31 0,#1b1e31 200px,#111421 200px,#111421 100%)!important;padding-top:calc(env(safe-area-inset-top,0px) + 8px)!important;}
+        .header{position:relative!important;top:auto!important;margin-top:0!important;}
+        .bottom-nav{bottom:max(0px,calc(env(safe-area-inset-bottom,0px) - 6px))!important;}
+      ` : `
+        .app{background:#1b1e31!important;}
+      `}
     `;
     doc.head.appendChild(style);
   }catch(e){}
